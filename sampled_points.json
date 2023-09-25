@@ -1,0 +1,23 @@
+[
+	{ "image_id": 193271, "category_id": 44, "point": [438.01742619144005, 143.21017702274025], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 44, "point": [58.321000207237525, 194.30898331892473], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 47, "point": [262.7767930578327, 160.20008718389974], "label": "cup" },
+	{ "image_id": 193271, "category_id": 50, "point": [90.76085552043548, 164.0736154929835], "label": "spoon" },
+	{ "image_id": 193271, "category_id": 51, "point": [301.3324955791863, 51.271034236545816], "label": "bowl" },
+	{ "image_id": 193271, "category_id": 79, "point": [186.2031196286054, 260.7425055471735], "label": "oven" },
+	{ "image_id": 193271, "category_id": 80, "point": [197.59945169864963, 162.40200748846723], "label": "toaster" },
+	{ "image_id": 193271, "category_id": 46, "point": [416.1459492281683, 76.00200740937046], "label": "wine glass" },
+	{ "image_id": 193271, "category_id": 47, "point": [312.454690909086, 156.93067057959482], "label": "cup" },
+	{ "image_id": 193271, "category_id": 47, "point": [415.17570822975665, 106.30266740489097], "label": "cup" },
+	{ "image_id": 193271, "category_id": 78, "point": [138.05001067996943, 103.97539449826718], "label": "microwave" },
+	{ "image_id": 193271, "category_id": 44, "point": [140.38090024847097, 158.11517926464433], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 44, "point": [152.6531348056242, 155.03551781074708], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 44, "point": [162.94439908903044, 150.96670050805776], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 44, "point": [229.63742858654993, 144.44084008316366], "label": "bottle" },
+	{ "image_id": 193271, "category_id": 48, "point": [75.82402402639893, 160.16405621489136], "label": "fork" },
+	{ "image_id": 193271, "category_id": 51, "point": [408.42669368218975, 50.1972067321803], "label": "bowl" },
+	{ "image_id": 193271, "category_id": 51, "point": [300.2877538078228, 54.0479651063196], "label": "bowl" },
+	{ "image_id": 193271, "category_id": 46, "point": [426.1393876626706, 98.1460404166486], "label": "wine glass" },
+	{ "image_id": 193271, "category_id": 50, "point": [62.39507540267169, 160.08142117957888], "label": "spoon" },
+	{ "image_id": 193271, "category_id": 81, "point": [452.349959608874, 237.2315441044162], "label": "sink" }
+]
