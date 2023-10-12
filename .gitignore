@@ -1,5 +1,5 @@
 /.vscode
 /annotations_trainval2017
 /segment-anything
-/train_pts
+/points_for_sam
 /train2017
