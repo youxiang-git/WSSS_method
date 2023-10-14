@@ -9,8 +9,8 @@ from pycocotools.mask import decode
 from shapely.geometry import Point, Polygon, mapping
 
 # Path to the COCO annotations file
-ann_path = "annotations_trainval2017/annotations/instances_train2017.json"
-img_path = "train2017"
+ann_path = "instances_minitrain2017.json"
+img_path = "coco_minitrain2017"
 
 # Initializing COCO object
 coco = COCO(ann_path)
@@ -23,7 +23,7 @@ for img_id in img_ids:
     ann_data = coco.loadAnns(ann_ids)
     ann_image = coco.loadImgs(img_id)
     print("Creating {} has begun.".format(ann_image[0]["file_name"][:-4]))
-    image_path = "train2017/{}".format(ann_image[0]["file_name"])
+    image_path = "coco_minitrain2017{}".format(ann_image[0]["file_name"])
 
     # Output path for the new json file
     output_path = "points_for_sam/{}_points.json".format(ann_image[0]["file_name"][:-4])

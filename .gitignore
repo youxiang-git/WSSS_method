@@ -1,5 +1,12 @@
+*.pth
+*.txt
+/annotations
+/__pycache__
 /.vscode
 /annotations_trainval2017
 /segment-anything
 /points_for_sam
 /train2017
+/pseudo_labels
+/coco_minitrain2017
+/val2017
