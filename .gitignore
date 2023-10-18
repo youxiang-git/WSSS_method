@@ -10,3 +10,7 @@
 /pseudo_labels
 /coco_minitrain2017
 /val2017
+/val2017_masks
+/coco_minitrain2017_masks
+/VOCtrainval_11-May-2012
+*.rar

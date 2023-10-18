@@ -1,93 +1,69 @@
-import numpy as np
-import torch
 import os
-from utils import CustomCOCODataset
+
+import matplotlib.pyplot as plt
+import numpy as np
+import PIL
+import torch
 from PIL import Image
 from torch import optim
 from torch.utils.data import DataLoader
-from torchvision.transforms import transforms
-from torchvision.transforms import InterpolationMode
-from torchvision.models.segmentation import fcn_resnet50
 from torchmetrics.classification import MulticlassJaccardIndex
+from torchvision.models.segmentation import fcn_resnet50
+from torchvision.transforms import InterpolationMode, transforms
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+from utils import CustomCOCODataset, img_transform, mask_transform
 
-wsss_model = fcn_resnet50(
-    weights=None, weights_backbone=None, num_classes=91, progress=True
-)
-
-img_transform = transforms.Compose(
-    [
-        transforms.Resize((224, 224), interpolation=InterpolationMode.BILINEAR),
-        transforms.ToTensor(),
-    ]
-)
-
-mask_transform = transforms.Compose(
-    [
-        transforms.ToTensor(),
-        transforms.Resize((224, 224), interpolation=InterpolationMode.NEAREST),
-    ]
-)
-
-wsss_model.load_state_dict(torch.load("wsss_model_weights.pth"))
-
-wsss_model.to(device)
-
-mini_train_dataset = CustomCOCODataset(
-    im_transform=img_transform, m_transform=mask_transform
-)
-
-eval_dataloader = DataLoader(
-    mini_train_dataset, batch_size=1, shuffle=True, num_workers=0
-)
-
-iou_metric = MulticlassJaccardIndex(91, 'macro').to(device)
-
-def model_eval(model, dataloader, num_classes):
+def model_eval(model, dataloader, num_classes, device):
     model.eval()
-
+    iou_metric = MulticlassJaccardIndex(num_classes, "macro", ignore_index=0).to(device)
+    total_batches = len(dataloader)
     total_iou = 0.0
     total_samples = 0
 
     with torch.no_grad():
-        for inputs, labels in dataloader:
+        for batch_idx, (inputs, labels) in enumerate(dataloader):
+            print(f"Now on batch - {batch_idx+1} / {total_batches} for evaluation")
             inputs = inputs.to(device)
             labels = labels.to(device)
-
-            outputs = model(inputs)['out']
+            outputs = model(inputs)["out"]
             _, preds = torch.max(outputs, 1)
 
-            np.savetxt("labels.txt", labels.squeeze(0).detach().cpu().numpy(), fmt="%i")
-            np.savetxt("preds.txt", preds.squeeze(0).detach().cpu().numpy(), fmt='%i')
+            np.save("labels", labels.detach().cpu().numpy())
+            np.save("preds", preds.squeeze(0).detach().cpu().numpy())
+            preds_ = torch.reshape(preds, (-1,))
+            labels_ = torch.reshape(labels, (-1,))
+            # print(labels_.shape)
+            # print(preds_.shape)
+            # print(preds_[preds_ != 0])
+            # print(labels_[labels_ != 0])
 
-            iou = iou_metric(preds, labels)
-            print(iou)
-            break
+            iou = iou_metric(preds_, labels_)
             total_iou += iou * inputs.size(0)
+
+            # print(iou)
+            # print(inputs.size(0))
             total_samples += inputs.size(0)
+            break
 
     mean_iou = total_iou / total_samples
     return mean_iou
 
+if __name__ == "__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def compute_iou(pred, label, num_classes):
-    pred = pred.view(-1)
-    label = label.view(-1)
+    wsss_model = fcn_resnet50(
+        weights=None, weights_backbone=None, num_classes=81, progress=True
+    )
 
-    iou_list = []
-    for sem_class in range(num_classes):
-        intersection = torch.sum((pred == sem_class) & (label == sem_class))
-        union = torch.sum((pred == sem_class) | (label == sem_class))
-        if union == 0:
-            iou_list.append(
-                float("nan")
-            )  # If there is no ground truth, do not include in evaluation
-        else:
-            iou_list.append(float(intersection) / float(union))
-    return sum(iou_list) / len(iou_list)
+    wsss_model.load_state_dict(torch.load("model_weights/wsss_model_epoch_48_weights.pth"))
 
+    wsss_model.to(device)
 
-mean_iou = model_eval(wsss_model, eval_dataloader, 91)
+    val_dataset = CustomCOCODataset(
+        "val2017", "val2017_masks", img_transform, mask_transform
+    )
 
-print("Mean IoU on evaluation data: {}".format(mean_iou))
+    eval_dataloader = DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=24)
+
+    mean_iou = model_eval(wsss_model, eval_dataloader, 81, device)
+    print("Mean IoU on evaluation data: {}".format(mean_iou))

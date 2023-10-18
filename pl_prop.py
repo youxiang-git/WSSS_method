@@ -7,6 +7,9 @@ import sys
 import os
 from segment_anything import sam_model_registry, SamPredictor
 
+with open("all_cats.json", "r") as file:
+    coco_80_cats = json.load(file)
+
 
 def show_mask(mask, ax, random_color=False):
     if random_color:
@@ -65,15 +68,17 @@ for file in os.listdir(sp_path):
 
         best_mask = None
 
+        curr_id = [i for i in coco_80_cats if coco_80_cats[i][0] == pt["category_id"]]
+        cat80_id = int(curr_id[0])
         if max(scores) < 0.95:
-            best_mask = masks[np.where(scores == max(scores))[0][0]] * pt["category_id"]
+            best_mask = masks[np.where(scores == max(scores))[0][0]] * cat80_id
         else:
             best_area = 0
             for idx in range(len(mask_list)):
                 if mask_list[idx][1] >= 0.95:
                     area = mask_list[idx][0].sum()
                     if area > best_area:
-                        best_mask = masks[idx] * pt["category_id"]
+                        best_mask = masks[idx] * cat80_id
                         best_area = area
 
         semantic_mask.append(best_mask)
