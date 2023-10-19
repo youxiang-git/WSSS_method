@@ -4,7 +4,8 @@ import csv
 from torch import optim
 from dataloader import CustomVOCDataset
 from torch.utils.data import DataLoader
-from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
+from torchvision.models import ResNet50_Weights
+from torchvision.models.segmentation import fcn_resnet50
 from eval import model_eval
 
 train = CustomVOCDataset("VOCtrainval_11-May-2012", "train", True)
@@ -15,7 +16,7 @@ val_loader = DataLoader(val, batch_size=16, shuffle=True, num_workers=12)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-wsss_model = fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, num_classes=21)
+wsss_model = fcn_resnet50(weights=None, weights_backbone=ResNet50_Weights.IMAGENET1K_V1 , num_classes=21)
 wsss_model.to(device)
 
 optimizer = optim.Adam(wsss_model.parameters(), 1e-4)

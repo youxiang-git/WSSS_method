@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import DataLoader
 from dataloader import CustomVOCDataset
 from torchmetrics.classification import MulticlassJaccardIndex
-from torchvision.models.segmentation import fcn_resnet101
+from torchvision.models.segmentation import fcn_resnet50
 
 
 def model_eval(model, dataloader, num_classes, device):
