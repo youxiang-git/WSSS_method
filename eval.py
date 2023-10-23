@@ -2,18 +2,21 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from dataloader import CustomVOCDataset
-from torchmetrics.classification import MulticlassJaccardIndex
+from torchmetrics.classification import (
+    MulticlassJaccardIndex,
+)
 from torchvision.models.segmentation import fcn_resnet50
 
 
 def model_eval(model, dataloader, num_classes, device):
     model.eval()
+    total_loss = 0.0
     iou_metric = MulticlassJaccardIndex(num_classes, "macro", ignore_index=255).to(
         device
     )
+    criterion1 = torch.nn.CrossEntropyLoss(ignore_index=255).to(device)
+    # criterion2 = DiceLoss(softmax=True, to_onehot_y=True).to(device)
     total_batches = len(dataloader)
-    total_iou = 0.0
-    total_samples = 0
 
     with torch.no_grad():
         for batch_idx, (inputs, labels) in enumerate(dataloader):
@@ -23,7 +26,9 @@ def model_eval(model, dataloader, num_classes, device):
             outputs = model(inputs)["out"]
             _, preds = torch.max(outputs, 1)
 
-            # print(preds_.shape)
+            # print(outputs.shape)
+            # print(preds.shape)
+            # print(labels.shape)
             # np.save("preds", preds.squeeze(0).detach().cpu().numpy())
 
             # np.save("labels", labels.detach().cpu().numpy())
@@ -32,22 +37,34 @@ def model_eval(model, dataloader, num_classes, device):
             # print(labels_.shape)
             # print(preds_[preds_ != 0])
             # print(labels_[labels_ != 0])
+            loss = criterion1(outputs, labels)
+            # labels[labels == 255] = 0
+            # loss = loss1 + (2 * criterion2(outputs, labels.unsqueeze(1)))
+            iou_metric.update(preds_, labels_)
+            total_loss += loss.item()
 
-            iou = iou_metric(preds_, labels_)
-            total_iou += iou * inputs.size(0)
+            # mAP_metric.update(outputs, labels)
+            # total_iou += iou * inputs.size(0)
+            # total_map += mAP * inputs.size(0)
 
             # print(iou)
             # print(inputs.size(0))
-            total_samples += inputs.size(0)
+            # total_samples += inputs.size(0)
 
-    mean_iou = total_iou / total_samples
-    return mean_iou
+        loss_epoch = total_loss / total_batches
+
+    # mean_iou = total_iou / total_samples
+    # mean_map = total_map / total_samples
+    return iou_metric.compute(), loss_epoch
+
+
+# , mAP_metric.compute()
 
 
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    wsss_model = fcn_resnet101(
+    wsss_model = fcn_resnet50(
         weights=None, weights_backbone=None, num_classes=21, progress=True
     )
 

@@ -9,7 +9,7 @@ from torchvision.transforms import InterpolationMode
 import torchvision.transforms.functional as F
 
 
-class CustomVOCDataset(Dataset):
+class CustomCRFDataset(Dataset):
     def __init__(self, voc_root, set="train", transform=False, weak=False):
         self.curr_dir = os.getcwd()
         self.weak = weak
@@ -68,6 +68,7 @@ class CustomVOCDataset(Dataset):
 
     def __getitem__(self, idx):
         img = Image.open(self.images[idx]).convert("RGB")
+        img_pure = F.pil_to_tensor(Image.open(self.images[idx]).convert("RGB"))
         mask = Image.open(self.masks[idx])
 
         if self.transform:
@@ -81,4 +82,4 @@ class CustomVOCDataset(Dataset):
         mask = F.pil_to_tensor(mask).squeeze()
         mask = mask.type(torch.LongTensor)
 
-        return img, mask
+        return img, mask, img_pure

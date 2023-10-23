@@ -14,5 +14,9 @@
 /coco_minitrain2017_masks
 /VOCtrainval_11-May-2012
 /voc_pseudomasks_SAM
+/voc_pseudomasks_Gdino_SAM
 /voc_points
+/voc_boxes
+/Mask_visualizations
+/Result visualizations
 *.rar
